@@ -49,8 +49,12 @@ compile_mesa() {
 
     mkdir -p subprojects && cd subprojects
     rm -rf spirv-tools spirv-headers
-    git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Tools.git spirv-tools
-    git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Headers.git spirv-headers
+    for i in 1 2 3; do
+        git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Tools.git spirv-tools && break || { echo "SPIRV-Tools clone attempt $i failed, retrying..."; sleep 5; }
+    done
+    for i in 1 2 3; do
+        git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Headers.git spirv-headers && break || { echo "SPIRV-Headers clone attempt $i failed, retrying..."; sleep 5; }
+    done
     cd ..
 
     local ndk_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin"
