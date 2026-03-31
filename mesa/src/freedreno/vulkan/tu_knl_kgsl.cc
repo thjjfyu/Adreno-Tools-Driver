@@ -54,8 +54,11 @@ kgsl_submitqueue_new(struct tu_device *dev, struct tu_queue *queue)
 {
    struct kgsl_drawctxt_create req = {
       .flags = KGSL_CONTEXT_SAVE_GMEM |
-              KGSL_CONTEXT_NO_GMEM_ALLOC |
-              KGSL_CONTEXT_PREAMBLE,
+               KGSL_CONTEXT_NO_GMEM_ALLOC |
+               KGSL_CONTEXT_PREAMBLE |
+               KGSL_CONTEXT_NO_FAULT_TOLERANCE |
+               KGSL_CONTEXT_TYPE_VK |
+               KGSL_CONTEXT_LPAC,
    };
 
    int ret = safe_ioctl(dev->physical_device->local_fd, IOCTL_KGSL_DRAWCTXT_CREATE, &req);
