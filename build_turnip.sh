@@ -5,6 +5,8 @@ deps="ninja patchelf unzip curl pip flex bison zip git perl glslangValidator pyt
 workdir="$(pwd)/turnip_workdir"
 ndkver="android-ndk-r29"
 
+mesa_src="$(pwd)/mesa"
+
 check_deps(){
 	for dep in $deps; do
 		if ! command -v $dep >/dev/null 2>&1; then exit 1; fi
@@ -22,18 +24,22 @@ prepare_ndk(){
 }
 
 compile_mesa() {
-    local repo_url="https://gitlab.freedesktop.org/mesa/mesa.git"
-    local branch="main"
     local output_name="Turnip-v26.1.0-R6"
     local mesa_dir="$workdir/mesa"
     local build_dir="$mesa_dir/build"
 
     cd "$workdir"
     rm -rf "$mesa_dir"
-    git clone --depth 100 -b "$branch" "$repo_url" "$mesa_dir"
+
+    if [ ! -d "$mesa_src" ]; then
+        echo "ERROR: Local Mesa source not found at $mesa_src"
+        exit 1
+    fi
+
+    cp -r "$mesa_src" "$mesa_dir"
     cd "$mesa_dir"
     
-    local githash=$(git rev-parse --short HEAD)
+    local githash=$(git -C "$mesa_src" rev-parse --short HEAD 2>/dev/null || echo "local")
 
     sed -i '/a7xx_gen1 = GPUProps(/a \        has_early_preamble = False,' src/freedreno/common/freedreno_devices.py || true
     
