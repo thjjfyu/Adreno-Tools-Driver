@@ -319,13 +319,13 @@ ir3_optimize_loop(struct ir3_compiler *compiler,
 
       static int gcm = -1;
       if (gcm == -1)
-         gcm = debug_get_num_option("GCM", 0);
+         gcm = debug_get_num_option("GCM", 1);
       if (gcm == 1)
          progress |= OPT(s, nir_opt_gcm, true);
       else if (gcm == 2)
          progress |= OPT(s, nir_opt_gcm, false);
       nir_opt_peephole_select_options peephole_select_options = {
-         .limit = 16,
+         .limit = 32,
          .indirect_load_ok = true,
          .expensive_alu_ok = true,
       };
