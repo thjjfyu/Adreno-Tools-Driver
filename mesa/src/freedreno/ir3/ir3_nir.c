@@ -310,12 +310,13 @@ ir3_optimize_loop(struct ir3_compiler *compiler,
       progress |= OPT(s, nir_opt_dce);
       progress |= OPT(s, nir_opt_cse);
 
-      progress |= OPT(s, nir_opt_find_array_copies);
-      progress |= OPT(s, nir_opt_copy_prop_vars);
-      progress |= OPT(s, nir_opt_dead_write_vars);
-      progress |= OPT(s, nir_split_struct_vars, nir_var_function_temp);
-      progress |= OPT(s, nir_opt_shrink_stores, true);
-      progress |= OPT(s, nir_shrink_vec_array_vars, nir_var_function_temp | nir_var_mem_shared);
+       progress |= OPT(s, nir_opt_find_array_copies);
+       progress |= OPT(s, nir_opt_copy_prop_vars);
+       progress |= OPT(s, nir_opt_dead_write_vars);
+       progress |= OPT(s, nir_split_struct_vars, nir_var_function_temp);
+       progress |= OPT(s, nir_opt_shrink_stores, true);
+       progress |= OPT(s, nir_shrink_vec_array_vars, nir_var_function_temp | nir_var_mem_shared);
+       progress |= OPT(s, nir_opt_rematerialize_compares);
 
       static int gcm = -1;
       if (gcm == -1)
@@ -344,12 +345,14 @@ ir3_optimize_loop(struct ir3_compiler *compiler,
       if (is_compute_or_frag(s->info.stage)) {
          progress |= OPT(s, nir_opt_phi_precision);
       }
-      progress |= OPT(s, nir_opt_algebraic);
-      progress |= OPT(s, nir_lower_alu);
-      progress |= OPT(s, nir_lower_pack);
-      progress |= OPT(s, nir_lower_bit_size, ir3_lower_bit_size, NULL);
-      progress |= OPT(s, nir_opt_constant_folding);
-      progress |= OPT(s, nir_opt_uub, &options->opt_uub_options);
+       progress |= OPT(s, nir_opt_algebraic);
+       progress |= OPT(s, nir_opt_algebraic_late);
+       progress |= OPT(s, nir_lower_alu);
+       progress |= OPT(s, nir_lower_pack);
+       progress |= OPT(s, nir_lower_bit_size, ir3_lower_bit_size, NULL);
+       progress |= OPT(s, nir_opt_constant_folding);
+       progress |= OPT(s, nir_opt_trig_continued);
+       progress |= OPT(s, nir_opt_uub, &options->opt_uub_options);
 
       /* Remove unused components from IO loads. */
       progress |= OPT(s, nir_opt_shrink_vectors, true);

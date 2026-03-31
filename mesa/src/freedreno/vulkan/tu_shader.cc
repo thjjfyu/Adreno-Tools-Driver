@@ -112,16 +112,20 @@ tu_spirv_to_nir_library(struct tu_device *dev,
     * with compile times.
     */
    NIR_PASS(_, nir, nir_lower_vars_to_ssa);
-   NIR_PASS(_, nir, nir_remove_dead_variables, nir_var_function_temp, NULL);
-   NIR_PASS(_, nir, nir_opt_copy_prop);
-   NIR_PASS(_, nir, nir_opt_dce);
-   NIR_PASS(_, nir, nir_opt_cse);
-   NIR_PASS(_, nir, nir_opt_gcm, true);
+    NIR_PASS(_, nir, nir_remove_dead_variables, nir_var_function_temp, NULL);
+    NIR_PASS(_, nir, nir_opt_copy_prop);
+    NIR_PASS(_, nir, nir_opt_dce);
+    NIR_PASS(_, nir, nir_opt_cse);
+    NIR_PASS(_, nir, nir_opt_gcm, true);
 
-   nir_opt_peephole_select_options peephole_select_options = {};
-   peephole_select_options.limit = 1;
-   NIR_PASS(_, nir, nir_opt_peephole_select, &peephole_select_options);
-   NIR_PASS(_, nir, nir_opt_dce);
+    nir_opt_peephole_select_options peephole_select_options = {};
+    peephole_select_options.limit = 16;
+    peephole_select_options.indirect_load_ok = true;
+    peephole_select_options.expensive_alu_ok = true;
+    NIR_PASS(_, nir, nir_opt_peephole_select, &peephole_select_options);
+    NIR_PASS(_, nir, nir_opt_algebraic_late);
+    NIR_PASS(_, nir, nir_opt_trig_continued);
+    NIR_PASS(_, nir, nir_opt_dce);
 
    return nir;
 }
